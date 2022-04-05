@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:eagon_bodega/src/models/user_model.dart';
-import 'package:eagon_bodega/src/providers/users_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import '/src/models/user_model.dart';
+import '/src/providers/users_provider.dart';
+import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -144,24 +145,19 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       final Future<UserModel> generatedUser = userProvider.getUserLogin(user);
 
       _toggleSubmitState();
+
       generatedUser.then((value) => {
             if (value != null)
               {
                 if (value.status == 1)
                   {
-                    //controller.dispose(),
                     Timer(Duration(seconds: 1), () {
+                      Navigator.pushNamed(context, '/home_casino');
                       _toggleSubmitState();
-                      // 5 seconds over, navigate to Page2.
-                      //Navigator.pushNamed(context, '/reception_search');
-                      //Navigator.pushNamed(context, '/orders');
-                      Navigator.pushNamed(context, '/home_blank');
                     })
                   }
                 else
                   {
-                    //controller.dispose(),
-
                     _toggleSubmitState(),
                     Fluttertoast.showToast(
                         msg: "Error al iniciar",
@@ -175,8 +171,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               }
             else
               {
-                //controller.dispose(),
-
                 _toggleSubmitState(),
                 Fluttertoast.showToast(
                     msg: "Error al iniciar",
@@ -188,8 +182,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     fontSize: 16.0)
               }
           });
-      //Navigator.pushNamed(context, '/home');
-
     }
   }
 }
