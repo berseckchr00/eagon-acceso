@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:eagon_bodega/src/models/access_model.dart';
+import 'package:eagon_bodega/src/models/person_model.dart';
 import 'package:eagon_bodega/src/models/response_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:eagon_bodega/src/models/user_model.dart';
 import 'package:eagon_bodega/src/utils/string_utils.dart';
 import 'package:eagon_bodega/src/config/enviroment_config.dart';
 import 'package:eagon_bodega/src/shared_preferences/user_preferences.dart';
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart';
 
 class AccessProvider {
   final String _url = EnviromentConfig().getApiUrl();
@@ -43,6 +46,50 @@ class AccessProvider {
       return responseServer;
     } on FormatException catch (e) {
       print(e);
+      return null;
+    }
+  }
+
+  Future<PersonModel> getPersonInfo(String rut) async {
+    var uri = Uri.parse('$_url/acceso.php/getInfoRut/$rut');
+    Map<String, String> headers = {
+      "content-type": "application/x-www-form-urlencoded",
+      'Authorization': EnviromentConfig().getApiKey(),
+      'ci_session': prefs.ciSession
+    };
+
+    var data;
+    try {
+      final resp = await http.get(uri, headers: headers);
+      //data = Utf8Codec().decode(resp.bodyBytes);
+      String data =
+          "<div style=\"width: auto; overflow-x: scroll; -webkit-overflow-scrolling: touch;\"><table class=\"table table-hover\"><thead><tr><th>Nombre</th><th>RUT</th><th>Sexo</th><th>Dirección</th><th>Ciudad/Comuna</th></tr></thead><tbody><tr tabindex=\"1\"><td>Gonzalez Jerez Diego Ariel</td><td style=\"white-space: nowrap;\">17.397.328-4</td><td>VAR</td><td>Desideiro Corbeaux 210</td><td>Lanco</td></tr></tbody></table></div>";
+      Map<String, String> person = _parseHTMLText(data);
+      final p = PersonModel.fromJson(person);
+      return p;
+      //List<Dte> lstDte = new
+
+    } catch (ex) {
+      return null;
+    }
+  }
+
+  Map<String, String> _parseHTMLText(String html) {
+    var document = parse(html);
+    var tag = document.body.getElementsByTagName("table").last;
+    if (tag.nodes.isNotEmpty) {
+      var tbody = tag.getElementsByTagName('tbody').first;
+      var tr = tbody.getElementsByTagName('tr').last;
+      var td = tr.getElementsByTagName('td');
+      //print(td.elementAt(1).text);
+      return {
+        'name': td.elementAt(0).text,
+        'rut': td.elementAt(1).text,
+        'genre': td.elementAt(2).text,
+        'direction': td.elementAt(3).text,
+        'city': td.elementAt(4).text
+      };
+    } else {
       return null;
     }
   }
