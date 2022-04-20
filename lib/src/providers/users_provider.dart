@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:eagon_bodega/src/models/user_model.dart';
@@ -6,13 +5,11 @@ import 'package:eagon_bodega/src/utils/string_utils.dart';
 import 'package:eagon_bodega/src/config/enviroment_config.dart';
 import 'package:eagon_bodega/src/shared_preferences/user_preferences.dart';
 
-class UserProvider{
-
-
+class UserProvider {
   final String _url = EnviromentConfig().getApiUrl();
   final prefs = new PreferenciasUsuario();
 
-  Future<UserModel> getUserLogin(UserModel user) async{
+  Future<UserModel> getUserLogin(UserModel user) async {
     //var url = '$_url/login.php/login';
     var uri = Uri.parse('$_url/login.php/login');
     Map<String, String> headers = {
@@ -21,18 +18,18 @@ class UserProvider{
     };
     Map<String, String> queryParameters = {
       "user": user.user,
-      "pass": user.pass
+      "pass": user.pass,
+      "origen_type": user.origenType
     };
 
     var data;
 
-    try{
- 
-
-      final resp = await http.post( uri, body: queryParameters,  headers: headers);
+    try {
+      final resp =
+          await http.post(uri, body: queryParameters, headers: headers);
 
       data = Utf8Codec().decode(resp.bodyBytes);
-      
+
       if (!isJson(data)) return null;
 
       final validJson = jsonDecode(data);
@@ -47,7 +44,7 @@ class UserProvider{
     }
   }
 
-  String getUrl(){
+  String getUrl() {
     return this._url;
   }
 

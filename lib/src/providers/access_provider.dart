@@ -61,11 +61,10 @@ class AccessProvider {
     var data;
     try {
       final resp = await http.get(uri, headers: headers);
-      //data = Utf8Codec().decode(resp.bodyBytes);
-      String data =
-          "<div style=\"width: auto; overflow-x: scroll; -webkit-overflow-scrolling: touch;\"><table class=\"table table-hover\"><thead><tr><th>Nombre</th><th>RUT</th><th>Sexo</th><th>Dirección</th><th>Ciudad/Comuna</th></tr></thead><tbody><tr tabindex=\"1\"><td>Gonzalez Jerez Diego Ariel</td><td style=\"white-space: nowrap;\">17.397.328-4</td><td>VAR</td><td>Desideiro Corbeaux 210</td><td>Lanco</td></tr></tbody></table></div>";
+      data = Utf8Codec().decode(resp.bodyBytes);
       Map<String, String> person = _parseHTMLText(data);
       final p = PersonModel.fromJson(person);
+      print(p.name);
       return p;
       //List<Dte> lstDte = new
 

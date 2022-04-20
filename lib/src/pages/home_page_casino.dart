@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:dart_rut_validator/dart_rut_validator.dart';
 
 class HomePageCasino extends StatefulWidget {
   HomePageCasino({Key key}) : super(key: key);
@@ -114,6 +116,8 @@ class FunkyOverlayStateManual extends State<FunkyOverlayManual>
   final TextEditingController _rut = new TextEditingController();
   final TextEditingController _nombre = new TextEditingController();
 
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -136,51 +140,55 @@ class FunkyOverlayStateManual extends State<FunkyOverlayManual>
     return _buildAlertDialog();
   }
 
+  void onChangedApplyFormat(String text) {
+    RUTValidator.formatFromTextController(_rut);
+  }
+
   Widget _buildAlertDialog() {
     return AlertDialog(
       title: Text('Ingreso Manual'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextFormField(
-            keyboardType: TextInputType.text,
-            style: TextStyle(color: Colors.black, fontSize: 16.0),
-            controller: _rut,
-            decoration: const InputDecoration(
-              hintText: 'Rut: ...',
-              contentPadding: EdgeInsets.all(20.0),
-              isDense: true,
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Error al Leer';
-              }
-              return null;
-            },
-            onFieldSubmitted: (String value) {
-              //TODO: buscar DTE
-            },
-          ),
-          TextFormField(
-            style: TextStyle(color: Colors.black, fontSize: 16.0),
-            controller: _nombre,
-            decoration: const InputDecoration(
-              hintText: 'Nombre : ...',
-              contentPadding: EdgeInsets.all(20.0),
-              isDense: true,
-            ),
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Error al Leer';
-              }
-              return null;
-            },
-            onFieldSubmitted: (String value) {
-              //TODO: buscar DTE
-            },
-          )
-        ],
-      ),
+      content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                keyboardType: TextInputType.text,
+                style: TextStyle(color: Colors.black, fontSize: 16.0),
+                controller: _rut,
+                onChanged: onChangedApplyFormat,
+                decoration: const InputDecoration(
+                  hintText: 'Rut: ...',
+                  contentPadding: EdgeInsets.all(20.0),
+                  isDense: true,
+                ),
+                validator:
+                    RUTValidator(validationErrorText: 'Ingrese RUT válido')
+                        .validator,
+                onFieldSubmitted: (String value) {
+                  //TODO: buscar DTE
+                },
+              ),
+              TextFormField(
+                style: TextStyle(color: Colors.black, fontSize: 16.0),
+                controller: _nombre,
+                decoration: const InputDecoration(
+                  hintText: 'Nombre : ...',
+                  contentPadding: EdgeInsets.all(20.0),
+                  isDense: true,
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Error al Leer';
+                  }
+                  return null;
+                },
+                onFieldSubmitted: (String value) {
+                  //TODO: buscar DTE
+                },
+              )
+            ],
+          )),
       actions: <Widget>[
         AsyncButtonBuilder(
           child: Text('Ingresar'),
@@ -215,31 +223,221 @@ class FunkyOverlayStateManual extends State<FunkyOverlayManual>
                 "location": 'casino'
               };
 
-              AccessModel acc = AccessModel.fromJson(data);
-              await _saveAccess(acc).then((value) => {
-                    if (value.success || value != null)
-                      {
-                        Fluttertoast.showToast(
-                            msg: "Datos ingresados correctamente",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.green.shade300,
-                            textColor: Colors.white,
-                            fontSize: 16.0)
-                      }
-                    else
-                      {
-                        Fluttertoast.showToast(
-                            msg: "Hubo un error",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.white,
-                            fontSize: 16.0)
-                      }
-                  });
+              if (_formKey.currentState.validate()) {
+                AccessModel acc = AccessModel.fromJson(data);
+                await _saveAccess(acc).then((value) => {
+                      if (value.success || value != null)
+                        {
+                          Fluttertoast.showToast(
+                              msg: "Datos ingresados correctamente",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.green.shade300,
+                              textColor: Colors.white,
+                              fontSize: 16.0),
+                          Navigator.of(context).pop()
+                        }
+                      else
+                        {
+                          Fluttertoast.showToast(
+                              msg: "Hubo un error",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0),
+                          Navigator.of(context).pop()
+                        }
+                    });
+              }
+            }
+          },
+          builder: (context, child, callback, _) {
+            return TextButton(
+              onPressed: callback,
+              child: child,
+            );
+          },
+        ),
+        FlatButton(
+            child: Text("Cancelar"),
+            textColor: Colors.red,
+            onPressed: () {
+              Navigator.of(context).pop();
+            }),
+      ],
+    );
+  }
+
+  Future<ResponseModel> _saveAccess(AccessModel acceso) async {
+    AccessProvider acc = AccessProvider();
+    ResponseModel resp = await acc.saveAccess(acceso);
+
+    return resp;
+  }
+}
+
+class FunkyOverlayScann extends StatefulWidget {
+  PersonModel _personModel;
+
+  FunkyOverlayScann(PersonModel personModel) {
+    this._personModel = personModel;
+  }
+  @override
+  State<StatefulWidget> createState() => FunkyOverlayStateScann(_personModel);
+}
+
+class FunkyOverlayStateScann extends State<FunkyOverlayScann>
+    with SingleTickerProviderStateMixin {
+  PersonModel _personModel;
+
+  FunkyOverlayStateScann(PersonModel personModel) {
+    this._personModel = personModel;
+  }
+  AnimationController controller;
+  Animation<double> scaleAnimation;
+  final TextEditingController _rut = new TextEditingController();
+  final TextEditingController _nombre = new TextEditingController();
+
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 450));
+    scaleAnimation =
+        CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
+
+    controller.addListener(() {
+      setState(() {});
+    });
+
+    controller.forward();
+    _rut.text = _personModel.rut;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return _buildAlertDialog();
+  }
+
+  void onChangedApplyFormat(String text) {
+    RUTValidator.formatFromTextController(_rut);
+  }
+
+  Widget _buildAlertDialog() {
+    return AlertDialog(
+      title: Text('Ingreso Datos'),
+      content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                keyboardType: TextInputType.text,
+                style: TextStyle(color: Colors.black, fontSize: 16.0),
+                controller: _rut,
+                onChanged: onChangedApplyFormat,
+                decoration: const InputDecoration(
+                  hintText: 'Rut: ...',
+                  contentPadding: EdgeInsets.all(20.0),
+                  isDense: true,
+                ),
+                validator:
+                    RUTValidator(validationErrorText: 'Ingrese RUT válido')
+                        .validator,
+                onFieldSubmitted: (String value) {},
+              ),
+              TextFormField(
+                style: TextStyle(color: Colors.black, fontSize: 16.0),
+                controller: _nombre,
+                decoration: const InputDecoration(
+                  hintText: 'Nombre : ...',
+                  contentPadding: EdgeInsets.all(20.0),
+                  isDense: true,
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Error al Leer';
+                  }
+                  return null;
+                },
+                onFieldSubmitted: (String value) {},
+              )
+            ],
+          )),
+      actions: <Widget>[
+        AsyncButtonBuilder(
+          child: Text('Ingresar'),
+          onPressed: () async {
+            if (_nombre.text == "") {
+              Fluttertoast.showToast(
+                  msg: "Datos Incorrectos",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            }
+
+            if (_rut.text == "") {
+              Fluttertoast.showToast(
+                  msg: "Datos Incorrectos",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            }
+
+            if (_rut.text != "" && _nombre.text != "") {
+              var data = {
+                "rut": _rut.text,
+                "name": _nombre.text,
+                "user": 'app',
+                "location": 'casino'
+              };
+
+              if (_formKey.currentState.validate()) {
+                AccessModel acc = AccessModel.fromJson(data);
+                await _saveAccess(acc).then((value) => {
+                      if (value.success || value != null)
+                        {
+                          Fluttertoast.showToast(
+                              msg: "Datos ingresados correctamente",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.green.shade300,
+                              textColor: Colors.white,
+                              fontSize: 16.0),
+                          Timer(Duration(seconds: 1), () {
+                            Navigator.pushNamed(context, '/home_casino');
+                          })
+                        }
+                      else
+                        {
+                          Fluttertoast.showToast(
+                              msg: "Hubo un error",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0),
+                          Timer(Duration(seconds: 1), () {
+                            Navigator.pushNamed(context, '/home_casino');
+                          })
+                        }
+                    });
+              }
             }
           },
           builder: (context, child, callback, _) {
@@ -279,7 +477,9 @@ class _QRViewExampleState extends State<QRViewExample> {
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
-  PersonModel personModel = PersonModel();
+  BuildContext conextPop;
+  PersonModel personModel =
+      PersonModel(rut: '', name: '', city: '', direction: '', genre: '');
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -292,8 +492,21 @@ class _QRViewExampleState extends State<QRViewExample> {
     controller.resumeCamera();
   }
 
+  Future<ResponseModel> _saveAccess(AccessModel acceso) async {
+    AccessProvider acc = AccessProvider();
+    ResponseModel resp = await acc.saveAccess(acceso);
+
+    return resp;
+  }
+
+  Future<void> _showMyDialogScann(BuildContext context) async {
+    return showDialog<void>(
+        context: context, builder: (_) => FunkyOverlayScann(personModel));
+  }
+
   @override
   Widget build(BuildContext context) {
+    conextPop = context;
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -305,13 +518,7 @@ class _QRViewExampleState extends State<QRViewExample> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  //TODO: Agregar callback future use API
-                  if (result != null)
-                    //Text(personModel.rut!)
-                    Text(
-                        'RUT: ${_getRutfromURI(result.code)} / ${personModel.name}')
-                  else
-                    const Text('Scan a code'),
+                  const Text('Escanear código'),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -320,60 +527,43 @@ class _QRViewExampleState extends State<QRViewExample> {
                         margin: const EdgeInsets.all(8),
                         child: ElevatedButton(
                             onPressed: () async {
-                              await controller?.toggleFlash();
-                              setState(() {});
+                              var data = {
+                                "rut": personModel.rut,
+                                "name": personModel.name,
+                                "user": 'app',
+                                "location": 'casino'
+                              };
+                              AccessModel acc = AccessModel.fromJson(data);
+                              await _saveAccess(acc).then((value) => {
+                                    if (value.success || value != null)
+                                      {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                "Datos ingresados correctamente",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor:
+                                                Colors.green.shade300,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0),
+                                        Navigator.of(context).pop()
+                                      }
+                                    else
+                                      {
+                                        Fluttertoast.showToast(
+                                            msg: "Hubo un error",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor: Colors.red,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0),
+                                        Navigator.of(context).pop()
+                                      }
+                                  });
                             },
-                            child: FutureBuilder(
-                              future: controller?.getFlashStatus(),
-                              builder: (context, snapshot) {
-                                return Text('Flash: ${snapshot.data}');
-                              },
-                            )),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              await controller?.flipCamera();
-                              setState(() {});
-                            },
-                            child: FutureBuilder(
-                              future: controller?.getCameraInfo(),
-                              builder: (context, snapshot) {
-                                if (snapshot.data != null) {
-                                  return Text(
-                                      'Camera facing ${describeEnum(snapshot.data)}');
-                                } else {
-                                  return const Text('loading');
-                                }
-                              },
-                            )),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await controller?.pauseCamera();
-                          },
-                          child: const Text('pause',
-                              style: TextStyle(fontSize: 20)),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await controller?.resumeCamera();
-                          },
-                          child: const Text('resume',
-                              style: TextStyle(fontSize: 20)),
-                        ),
+                            child: Text('Guardar')),
                       )
                     ],
                   ),
@@ -415,7 +605,9 @@ class _QRViewExampleState extends State<QRViewExample> {
       //result = scanData;
       setState(() {
         result = scanData;
-        _getInfoRut(scanData);
+        personModel.rut = _getRutfromURI(result.code);
+        _showMyDialogScann(conextPop);
+        //_getInfoRut(scanData);
       });
     }).asFuture(_getInfoRut);
   }

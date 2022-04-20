@@ -20,6 +20,20 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   bool submitting = false;
 
+  List<DropdownMenuItem<String>> get dropdownItems {
+    List<DropdownMenuItem<String>> menuItems = [
+      DropdownMenuItem(child: Text("Casino"), value: "Casino"),
+      DropdownMenuItem(child: Text("Porteria"), value: "Porteria")
+    ];
+    return menuItems;
+  }
+
+  Map<String, String> routeList = {
+    'Porteria': '/home_porteria',
+    'Casino': '/home_casino'
+  };
+  String selectedValue = 'Casino';
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +47,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    user.origenType = selectedValue;
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -70,13 +85,43 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   child: _createUserInput()),
               Padding(
                   padding: const EdgeInsets.only(
-                      left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      left: 15.0, right: 15.0, top: 15, bottom: 15),
                   child: _createPasswordInput()),
+              Padding(
+                  padding: const EdgeInsets.only(
+                      left: 15.0, right: 15.0, top: 0, bottom: 15),
+                  child: _createDropdownOrigin()),
               Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 15, bottom: 0),
                   child: _createSubmitButton(context))
             ])));
+  }
+
+  Widget _createDropdownOrigin() {
+    return DropdownButtonFormField(
+      decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: Colors.grey, width: 0),
+        ),
+        // border: OutlineInputBorder(
+        //   borderRadius: BorderRadius.circular(2),
+        // ),
+        //filled: true,
+        contentPadding: EdgeInsets.all(20.0),
+      ),
+      style: TextStyle(color: Colors.black, fontSize: 20.0),
+      value: selectedValue,
+      onChanged: (String newValue) {
+        setState(() {
+          selectedValue = newValue;
+          _formData['origen_type'] = newValue;
+          user.origenType = newValue;
+        });
+      },
+      items: dropdownItems,
+    );
   }
 
   Widget _createUserInput() {
@@ -152,7 +197,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 if (value.status == 1)
                   {
                     Timer(Duration(seconds: 1), () {
-                      Navigator.pushNamed(context, '/home_casino');
+                      Navigator.pushNamed(context, routeList[value.origenType]);
                       _toggleSubmitState();
                     })
                   }
@@ -160,7 +205,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   {
                     _toggleSubmitState(),
                     Fluttertoast.showToast(
-                        msg: "Error al iniciar",
+                        msg: "Error al iniciar ${value.msgStatus}",
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                         timeInSecForIosWeb: 1,
