@@ -51,7 +51,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text('EAGON Bodega'),
+          title: Text('Control Acceso EAGON'),
           centerTitle: true,
           backgroundColor: Colors.orange,
           automaticallyImplyLeading: false,

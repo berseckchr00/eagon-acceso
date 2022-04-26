@@ -177,12 +177,12 @@ class FunkyOverlayStateManual extends State<FunkyOverlayManual>
                   contentPadding: EdgeInsets.all(20.0),
                   isDense: true,
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Error al Leer';
-                  }
-                  return null;
-                },
+                // validator: (value) {
+                //   if (value.isEmpty) {
+                //     return 'Error al Leer';
+                //   }
+                //   return null;
+                // },
                 onFieldSubmitted: (String value) {
                   //TODO: buscar DTE
                 },
@@ -193,16 +193,16 @@ class FunkyOverlayStateManual extends State<FunkyOverlayManual>
         AsyncButtonBuilder(
           child: Text('Ingresar'),
           onPressed: () async {
-            if (_nombre.text == "") {
-              Fluttertoast.showToast(
-                  msg: "Datos Incorrectos",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            }
+            // if (_nombre.text == "") {
+            //   Fluttertoast.showToast(
+            //       msg: "Datos Incorrectos",
+            //       toastLength: Toast.LENGTH_SHORT,
+            //       gravity: ToastGravity.BOTTOM,
+            //       timeInSecForIosWeb: 1,
+            //       backgroundColor: Colors.red,
+            //       textColor: Colors.white,
+            //       fontSize: 16.0);
+            // }
 
             if (_rut.text == "") {
               Fluttertoast.showToast(
@@ -215,7 +215,7 @@ class FunkyOverlayStateManual extends State<FunkyOverlayManual>
                   fontSize: 16.0);
             }
 
-            if (_rut.text != "" && _nombre.text != "") {
+            if (_rut.text != "") {
               var data = {
                 "rut": _rut.text,
                 "name": _nombre.text,
@@ -361,12 +361,12 @@ class FunkyOverlayStateScann extends State<FunkyOverlayScann>
                   contentPadding: EdgeInsets.all(20.0),
                   isDense: true,
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Error al Leer';
-                  }
-                  return null;
-                },
+                // validator: (value) {
+                //   if (value.isEmpty) {
+                //     return 'Error al Leer';
+                //   }
+                //   return null;
+                // },
                 onFieldSubmitted: (String value) {},
               )
             ],
@@ -375,16 +375,16 @@ class FunkyOverlayStateScann extends State<FunkyOverlayScann>
         AsyncButtonBuilder(
           child: Text('Ingresar'),
           onPressed: () async {
-            if (_nombre.text == "") {
-              Fluttertoast.showToast(
-                  msg: "Datos Incorrectos",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            }
+            // if (_nombre.text == "") {
+            //   Fluttertoast.showToast(
+            //       msg: "Datos Incorrectos",
+            //       toastLength: Toast.LENGTH_SHORT,
+            //       gravity: ToastGravity.BOTTOM,
+            //       timeInSecForIosWeb: 1,
+            //       backgroundColor: Colors.red,
+            //       textColor: Colors.white,
+            //       fontSize: 16.0);
+            // }
 
             if (_rut.text == "") {
               Fluttertoast.showToast(
@@ -397,7 +397,7 @@ class FunkyOverlayStateScann extends State<FunkyOverlayScann>
                   fontSize: 16.0);
             }
 
-            if (_rut.text != "" && _nombre.text != "") {
+            if (_rut.text != "") {
               var data = {
                 "rut": _rut.text,
                 "name": _nombre.text,
