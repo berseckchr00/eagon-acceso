@@ -26,7 +26,7 @@ class AccessProvider {
     String jsonData = jsonEncode({
       "rut": acceso.rut,
       "name": acceso.name,
-      "user": acceso.user,
+      "user": prefs.ciUserName,
       "location": acceso.location
     });
     Map<String, String> queryParameters = {"data": jsonData};

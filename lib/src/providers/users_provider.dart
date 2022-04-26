@@ -35,8 +35,9 @@ class UserProvider {
       final validJson = jsonDecode(data);
       final userData = UserModel.fromJson(validJson);
       prefs.ciSession = userData.ci_session;
+      prefs.ciUserName = user.idUser;
 
-      print(prefs.ciSession);
+      print(prefs.ciUserName + ' - ' + prefs.ciSession);
       return userData;
     } on FormatException catch (e) {
       print(e);

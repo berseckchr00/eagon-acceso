@@ -220,7 +220,7 @@ class FunkyOverlayStateManual extends State<FunkyOverlayManual>
                 "rut": _rut.text,
                 "name": _nombre.text,
                 "user": 'app',
-                "location": 'Porteria'
+                "location": 'porteria'
               };
 
               if (_formKey.currentState.validate()) {
@@ -402,7 +402,7 @@ class FunkyOverlayStateScann extends State<FunkyOverlayScann>
                 "rut": _rut.text,
                 "name": _nombre.text,
                 "user": 'app',
-                "location": 'Porteria'
+                "location": 'porteria'
               };
 
               if (_formKey.currentState.validate()) {
