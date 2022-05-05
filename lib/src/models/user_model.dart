@@ -29,7 +29,7 @@ class UserModel {
   String msgStatus;
   dynamic idUser;
   dynamic idPersonal;
-  String numFicha;
+  dynamic numFicha;
   String origenType;
   String ci_session;
 

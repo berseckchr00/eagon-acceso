@@ -418,9 +418,7 @@ class FunkyOverlayStateScann extends State<FunkyOverlayScann>
                               backgroundColor: Colors.green.shade300,
                               textColor: Colors.white,
                               fontSize: 16.0),
-                          Timer(Duration(seconds: 1), () {
-                            Navigator.pushNamed(context, '/home_casino');
-                          })
+                          Navigator.pushNamed(context, '/home_casino')
                         }
                       else
                         {
@@ -432,9 +430,7 @@ class FunkyOverlayStateScann extends State<FunkyOverlayScann>
                               backgroundColor: Colors.red,
                               textColor: Colors.white,
                               fontSize: 16.0),
-                          Timer(Duration(seconds: 1), () {
-                            Navigator.pushNamed(context, '/home_casino');
-                          })
+                          Navigator.pushNamed(context, '/home_casino')
                         }
                     });
               }
@@ -451,7 +447,7 @@ class FunkyOverlayStateScann extends State<FunkyOverlayScann>
             child: Text("Cancelar"),
             textColor: Colors.red,
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pushNamed(context, '/home_casino');
             }),
       ],
     );
@@ -638,11 +634,18 @@ class _QRViewExampleState extends State<QRViewExample> {
   }
 
   String _getRutfromURI(String uri) {
-    final regexp = RegExp(r'(\d{8}-\d)');
+    // var regexp = RegExp(r'(\d{8}-\d)');
+    // var match = regexp.firstMatch(uri);
 
-    // find the first match though you could also do `allMatches`
-    final match = regexp.firstMatch(uri);
-    return match?.group(0);
+    // if (match == null) {
+    //   regexp = RegExp(r'(\d{10}-\d)');
+    //   match = regexp.firstMatch(uri);
+    // }
+
+    var possInit = uri.indexOf('RUN=');
+    var possEnd = uri.indexOf('&type=');
+
+    return uri.substring(possInit + 4, possEnd);
   }
 
   Future<PersonModel> _getPersonInfo(String rut) async {

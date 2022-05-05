@@ -24,7 +24,7 @@ class AccessProvider {
     };
 
     String jsonData = jsonEncode({
-      "rut": acceso.rut,
+      "rut": acceso.rut.replaceAll('.', ''),
       "name": acceso.name,
       "user": prefs.ciUserName,
       "location": acceso.location
