@@ -13,6 +13,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:dart_rut_validator/dart_rut_validator.dart';
 
+import 'navdrawer_page.dart';
+
 class HomePageCasino extends StatefulWidget {
   HomePageCasino({Key key}) : super(key: key);
 
@@ -24,9 +26,11 @@ class _HomePageCasinoState extends State<HomePageCasino> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        drawer: NavDrawer(),
         appBar: AppBar(
-          leading: Container(),
-          title: Text("Ingreso Casino", style: TextStyle(fontSize: 18)),
+          centerTitle: true,
+          backgroundColor: Colors.orange,
+          title: Text("EAGON - Ingreso Casino", style: TextStyle(fontSize: 18)),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,

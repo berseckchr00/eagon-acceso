@@ -1,31 +1,7 @@
 {
     "nombreApp" : "Componentes",
     "rutas" : [
-        {
-            "ruta" : "/home",
-            "icon" : "home_rounded",
-            "texto": "Inicio",
-            "divider": false
-        },
-        {
-            "ruta" : "/reception",
-            "icon" : "add_alert",
-            "texto": "Recepción",
-            "divider": false
-        },
-        {
-            "ruta" : "/allocate",
-            "icon" : "assignment_returned_outlined",
-            "texto": "Asignar Ubicación",
-            "divider": false
-        },
-        {
-            "ruta" : "/orders",
-            "icon" : "accessibility",
-            "texto": "Pedidos",
-            "divider": true
-        },
-        {
+                {
             "ruta" : "/logout",
             "icon" : "exit_to_app",
             "texto": "Salir",

@@ -13,6 +13,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:dart_rut_validator/dart_rut_validator.dart';
 
+import 'navdrawer_page.dart';
+
 class HomePagePorteria extends StatefulWidget {
   HomePagePorteria({Key key}) : super(key: key);
 
@@ -24,9 +26,12 @@ class _HomePagePorteriaState extends State<HomePagePorteria> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        drawer: NavDrawer(),
         appBar: AppBar(
-          leading: Container(),
-          title: Text("Ingreso Porteria", style: TextStyle(fontSize: 18)),
+          centerTitle: true,
+          backgroundColor: Colors.orange,
+          title:
+              Text("EAGON - Ingreso Porteria", style: TextStyle(fontSize: 18)),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
